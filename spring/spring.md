@@ -42,6 +42,10 @@
 - [Model vs ModelMap vs ModelAndView](#model-vs-modelmap-vs-modelandview)
 - [В чем разница между model.put() и model.addAttribute()?](#в-чем-разница-между-modelput-и-modeladdattribute)
 - [PreparedStatementCreator](#preparedstatementcreator)
+- [Как внедрить java.util.Properties в Spring Bean?](#как-внедрить-javautilproperties-в-spring-bean)
+- [Что нового в Spring 5?](#что-нового-в-spring-5)
+- [RestTemplate и JDBCTemplate](#resttemplate-и-jdbctemplate)
+- [Socket](#socket)
 
 
 
@@ -1284,3 +1288,33 @@ PreparedStatement - нужен для защиты от SQL-инъекций в 
 
 PreparedStatementCreator - для создания возврата PreparedStatement из connection. При этом он автоматически обрабатывает все исключения (кроме SQLExeption).
 
+
+
+## Как внедрить java.util.Properties в Spring Bean?
+Используя SpEL
+```java
+@Value("${maxReadResults}")
+private int maxReadResults;
+```
+Или определить propertyConfigure bean в XML.
+
+
+## Что нового в Spring 5?
++ Используется JDK 8+ (Optional, CompletableFuture, Time API, java.util.function, default methods)
++ Поддержка Java 9 (Automatic-Module-Name in 5.0, module-info in 6.0+, ASM 6)
++ Поддержка HTTP/2 (TLS, Push), NIO/NIO.2, Kotlin
++ Поддержка Kotlin
++ Реактивность (Web on Reactive Stack)
++ Null-safety аннотации(@Nullable), новая документация
++ Совместимость с Java EE 8 (Servlet 4.0, Bean Validation 2.0, JPA 2.2, JSON Binding API 1.0)
++ Поддержка JUnit 5 + Testing Improvements (conditional and concurrent)
++ Удалена поддержка: Portlet, Velocity, JasperReports, XMLBeans, JDO, Guava
+
+## RestTemplate и JDBCTemplate
+Класс RestTemplate является центральным инструментом для выполнения клиентских HTTP-операций в Spring. Он предоставляет несколько утилитных методов для создания HTTP-запросов и обработки ответов.
+
+JdbcTemplate - базовый класс, который управляет обработкой всех событий и связями с БД посредством sql запросов. При этом все пишется программистом, не автоматизированно.
+
+
+## Socket
+Класс для двунаправленного соединением между клиентом и сервером. Например пользователь чатится с другим пользователем, сокет обрабатывает эти сообщения. Отвечает за создание соединения и пересылку данных.
