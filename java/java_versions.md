@@ -19,7 +19,7 @@
 - [Java SE 18 (2022)](#Java-SE-18-(2022))
 - [Java SE 19 (2022)](#Java-SE-19-(2022))
 - [Java SE 20 (2023)](#Java-SE-20-(2023))
-- [Java SE 21 (2023)](#Java-SE-21-LTS-(2023))
+- [Java SE 21 LTS (2023)](#Java-SE-21-LTS-(2023))
 
 
 ## JDK 1.0 (1996)
