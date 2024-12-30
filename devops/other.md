@@ -1,7 +1,7 @@
 # Other
 - [JWT](#jwt)
-- []()
-- []()
+- [OAuth](#oauth)
+- [SAML](#saml)
 - []()
 - []()
 
@@ -62,3 +62,93 @@ JWT часто используется для передачи информац
 - **Срок действия**: Необходимо тщательно выбирать срок действия токенов, чтобы сбалансировать безопасность и удобство использования.
 
 В целом, JWT является мощным инструментом для обеспечения безопасности веб-приложений и сервисов, обеспечивая простую и эффективную аутентификацию и авторизацию пользователей.
+
+
+## OAuth
+OAuth (Open Authorization) - это стандартный протокол авторизации, который обеспечивает предоставление ограниченной информации о пользователе третьей стороне без передачи логина и пароля. Протокол начал разрабатываться в 2006 году, а последняя версия OAuth 2.0 была опубликована в 2012 году. OAuth позволяет пользователю использовать один аккаунт для аутентификации на нескольких сервисах, не раскрывая свой пароль. Он используется, например, при авторизации на сторонних площадках через аккаунты соцсетей или при установке мобильного приложения, которое взаимодействует с другими сервисами. Отличие OAuth от OpenID заключается в том, что OAuth предоставляет права на использование ресурса, тогда как OpenID служит средством аутентификации.
+
+
+## SAML
+SAML (Security Assertion Markup Language) - это язык разметки, основанный на языке XML, который представляет собой открытый стандарт обмена данными аутентификации и авторизации между участниками, такими как поставщик учетных записей (identity provider) и поставщик сервиса (service provider). SAML был разработан Техническим комитетом безопасности сервисов OASIS и впервые опубликован в 2001 году, с последними обновлениями в 2005 году. Одной из ключевых задач, решаемых SAML, является обеспечение сквозной аутентификации (Single Sign On - SSO) при работе через Web-браузер.
+Вот пример простого SAML файла, который демонстрирует структуру документа и основные элементы, используемые в процессе обмена данными аутентификации и авторизации:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                ID="_abc123def456"
+                Version="2.0"
+                IssueInstant="2023-10-01T12:00:00Z"
+                Destination="https://example.com/sso">
+    <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">http://idp.example.org</saml:Issuer>
+    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <!-- Здесь размещается цифровая подпись -->
+    </ds:Signature>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </samlp:Status>
+    <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                    ID="_xyz987654321"
+                    Version="2.0"
+                    IssueInstant="2023-10-01T12:00:00Z">
+        <saml:Issuer>http://idp.example.org</saml:Issuer>
+        <saml:Subject>
+            <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">john.doe@example.com</saml:NameID>
+            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                <saml:SubjectConfirmationData NotOnOrAfter="2023-10-01T13:00:00Z"
+                                              Recipient="https://example.com/sso"/>
+            </saml:SubjectConfirmation>
+        </saml:Subject>
+        <saml:Conditions NotBefore="2023-10-01T11:30:00Z"
+                         NotOnOrAfter="2023-10-01T13:00:00Z">
+            <saml:AudienceRestriction>
+                <saml:Audience>https://example.com</saml:Audience>
+            </saml:AudienceRestriction>
+        </saml:Conditions>
+        <saml:AuthnStatement AuthnInstant="2023-10-01T12:00:00Z"
+                             SessionIndex="_session12345">
+            <saml:AuthnContext>
+                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
+            </saml:AuthnContext>
+        </saml:AuthnStatement>
+        <saml:AttributeStatement>
+            <saml:Attribute Name="givenName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+                <saml:AttributeValue xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">John</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="sn" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+                <saml:AttributeValue xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Doe</saml:AttributeValue>
+            </saml:Attribute>
+        </saml:AttributeStatement>
+    </saml:Assertion>
+</samlp:Response>
+```
+
+### Описание основных элементов:
+
+1. **`<samlp:Response>`**:
+   - Основной элемент ответа SAML, содержащий всю необходимую информацию об аутентифицированном пользователе.
+
+2. **`<saml:Issuer>`**:
+   - Идентифицирует поставщика учетных записей (Identity Provider).
+
+3. **`<ds:Signature>`**:
+   - Содержит цифровую подпись, подтверждающую подлинность сообщения.
+
+4. **`<samlp:Status>`**:
+   - Указывает статус обработки запроса (в данном случае успешная обработка).
+
+5. **`<saml:Assertion>`**:
+   - Основная часть сообщения, содержащая утверждение о пользователе, включая его идентификационные данные, условия и результаты аутентификации.
+
+6. **`<saml:Subject>`**:
+   - Определяет субъект (пользователь), для которого выдано утверждение.
+
+7. **`<saml:Conditions>`**:
+   - Условия, при которых данное утверждение считается действительным.
+
+8. **`<saml:AuthnStatement>`**:
+   - Информация о методе и времени аутентификации субъекта.
+
+9. **`<saml:AttributeStatement>`**:
+   - Атрибуты пользователя, такие как имя, фамилия и другие данные.
+
+Этот пример иллюстрирует базовую структуру SAML-ответа, используемого для передачи утверждений о пользователе между поставщиком учетных записей и поставщиком сервиса.
