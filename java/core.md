@@ -436,3 +436,118 @@ for (String s : "Hello the brave world".split(" ")) {
 }
 System.out.println(joiner); //prefix-Hello.the.brave.world-suffix
 ```
+
+## Reactive Streams
+Reactive Streams — это стандарт для асинхронного обмена данными между компонентами системы, который был принят сообществом Java и реализован в виде спецификации. Основная цель Reactive Streams заключается в обеспечении эффективного и безопасного управления потоками данных, особенно когда речь идет о большом объеме данных или высокой нагрузке.
+
+### Основные принципы Reactive Streams
+
+1. **Асинхронность**: Данные передаются асинхронно, то есть отправитель и получатель работают независимо друг от друга. Это позволяет минимизировать блокировку потоков и повысить общую производительность системы.
+
+2. **Back-pressure**: Механизм обратной связи, который позволяет потребителю контролировать скорость поступления данных от производителя. Если потребитель не успевает обрабатывать данные, он может сигнализировать производителю о снижении темпа передачи.
+
+3. **Нестабильность**: Потоки данных могут быть нестабильными, то есть могут возникать ошибки или завершения потоков. Reactive Streams предоставляет механизмы для обработки этих ситуаций.
+
+### Компоненты Reactive Streams
+
+Спецификация Reactive Streams определяет четыре основных компонента:
+
+1. **Publisher**: Источник данных. Publisher генерирует элементы данных и передает их подписчику.
+
+2. **Subscriber**: Потребитель данных. Subscriber получает элементы данных от издателя и обрабатывает их.
+
+3. **Subscription**: Контракт между издателем и подписчиком, который управляет передачей данных. Subscription позволяет подписчику запрашивать определенное количество элементов данных у издателя.
+
+4. **Processor**: Комбинация издателя и подписчика. Processor принимает данные от одного источника, преобразует их и передает другому источнику.
+
+### Пример использования Reactive Streams в Java
+
+Рассмотрим простой пример использования Reactive Streams в Java:
+
+```java
+import org.reactivestreams.*;
+
+public class Main implements Publisher<Integer> {
+    
+    @Override
+    public void subscribe(Subscriber<? super Integer> subscriber) {
+        subscriber.onSubscribe(new Subscription() {
+            private int count = 0;
+            
+            @Override
+            public void request(long n) {
+                for (int i = 0; i < n; i++) {
+                    if (count >= 10) {
+                        subscriber.onComplete();
+                        return;
+                    }
+                    subscriber.onNext(count++);
+                }
+            }
+
+            @Override
+            public void cancel() {
+                // Logic for cancellation
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        Main publisher = new Main();
+        
+        Subscriber<Integer> subscriber = new Subscriber<>() {
+            private Subscription subscription;
+
+            @Override
+            public void onSubscribe(Subscription subscription) {
+                this.subscription = subscription;
+                subscription.request(5); // Request first batch of data
+            }
+
+            @Override
+            public void onNext(Integer item) {
+                System.out.println("Received: " + item);
+                if (item == 4) {
+                    subscription.request(5); // Request next batch of data
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onComplete() {
+                System.out.println("Completed");
+            }
+        };
+
+        publisher.subscribe(subscriber);
+    }
+}
+```
+
+### Объяснение примера
+
+1. **Main класс**: Реализует интерфейс `Publisher<Integer>`, что делает его источником данных.
+
+2. **subscribe метод**: Метод подписки, который создает новый объект `Subscription` и передает его подписчику.
+
+3. **Subscription**: Управляет передачей данных от издателя к подписчику. В данном примере `request` метод отвечает за генерацию и передачу данных подписчику.
+
+4. **Subscriber**: Реализует интерфейс `Subscriber<Integer>` и обрабатывает полученные данные. В методе `onNext` выводятся полученные значения, а также осуществляется запрос следующей партии данных после получения определенного элемента.
+
+Этот пример демонстрирует базовые концепции Reactive Streams и показывает, как можно реализовать асинхронный обмен данными с использованием back-pressure.
+
+### Преимущества Reactive Streams
+
+1. **Эффективное использование ресурсов**: Благодаря механизму back-pressure, система может адаптироваться под текущую нагрузку, избегая переполнения буферов и потери данных.
+
+2. **Масштабируемость**: Асинхронная модель позволяет легко масштабировать систему, добавляя новые источники и потребителей данных.
+
+3. **Устойчивость к сбоям**: Механизмы обработки ошибок и завершения потоков обеспечивают устойчивость системы к различным непредвиденным ситуациям.
+
+4. **Совместимость**: Спецификация Reactive Streams поддерживается многими популярными фреймворками и библиотеками, такими как RxJava, Project Reactor и Akka Streams.
+
+Reactive Streams является важным шагом вперед в разработке реактивных систем, обеспечивающим эффективное и надежное управление потоками данных.
